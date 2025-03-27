@@ -19,7 +19,7 @@ pub fn make_image() {
             y: -20.,
             z: 50.,
         },
-        intensity: 1_000_000,
+        intensity: 2_000_000,
     };
     let camera = Camera {
         point: Vector {
@@ -91,7 +91,7 @@ pub fn make_image() {
     let main = Sphere {
         origin: Vector {
             x: 0.,
-            y: -2.,
+            y: 0.,
             z: 25.,
         },
         radius: 10.,

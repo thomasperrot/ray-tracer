@@ -6,6 +6,7 @@ use crate::utils::vector::Vector;
 use rand::prelude::*;
 use std::cmp;
 use std::f32::consts::{E, PI};
+use std::ops::Deref;
 
 pub struct Camera {
     pub point: Vector,
@@ -42,7 +43,7 @@ impl Scene {
         let mut imgbuf = image::ImageBuffer::new(IMAGE_SIZE.0, IMAGE_SIZE.1);
         let d = (IMAGE_SIZE.0 / 2) as f32 / (self.camera.fov / 2.).tan();
         for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-            let ray = self.generate_ray(x, y, d);
+            let ray = self.generate_ray(y, x, d);
             let color = self.get_color(ray);
             *pixel = color;
         }
@@ -80,10 +81,11 @@ impl Scene {
             * self.light.intensity as f32
             / (2. * PI * light_distance);
         let light_value = f32::max(light_value, 0.);
+        let mat = intersection.shape.get_material();
         image::Rgb([
-            (light_value).trunc() as u8,
-            (light_value).trunc() as u8,
-            (light_value).trunc() as u8,
+            (light_value.trunc() * mat.color[0] as f32 / 256.) as u8,
+            (light_value.trunc() * mat.color[1] as f32 / 256.) as u8,
+            (light_value.trunc() * mat.color[2] as f32 / 256.) as u8,
         ])
     }
 

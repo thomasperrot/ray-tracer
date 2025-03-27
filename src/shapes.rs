@@ -10,6 +10,8 @@ pub trait Shape {
 
     /// Return the normal vector to the shape at a given point
     fn get_normal(&self, v: &Vector) -> Vector;
+
+    fn get_material(&self) -> Material;
 }
 
 impl Debug for dyn Shape {
@@ -55,6 +57,10 @@ impl Shape for Sphere {
     fn get_normal(&self, v: &Vector) -> Vector {
         (*v - self.origin).normalize()
     }
+
+    fn get_material(&self) -> Material {
+        self.material
+    }
 }
 
 /// An hyperboloid structure
@@ -63,8 +69,7 @@ pub struct Hyperboloid {
     pub origin: Vector,
     /// The a, b and c coefficients
     pub coefficients: (f32, f32, f32),
-    /// The absorption to RGB colors
-    pub rho: (u8, u8, u8),
+    pub material: Material,
 }
 
 impl Shape for Hyperboloid {
@@ -78,5 +83,9 @@ impl Shape for Hyperboloid {
             z: (v.z - self.origin.z) / (self.coefficients.2.powi(2)),
         }
         .normalize()
+    }
+
+    fn get_material(&self) -> Material {
+        self.material
     }
 }
