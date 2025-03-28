@@ -1,7 +1,7 @@
 use crate::constants::IMAGE_SIZE;
 use crate::materials::Material;
 use crate::scene::{Camera, Light, Scene};
-use crate::shapes::Sphere;
+use crate::shapes::{Hyperboloid, Sphere};
 use crate::utils::vector::Vector;
 use image::Rgb;
 use std::f32::consts::PI;
@@ -97,6 +97,15 @@ pub fn make_image() {
         radius: 10.,
         material: opaque_white,
     };
+    let hyperboloid = Hyperboloid {
+        origin: Vector {
+            x: 0.,
+            y: 0.,
+            z: -10.,
+        },
+        coefficients: (0.5, 1., 0.5),
+        material: opaque_white,
+    };
     let back = Sphere {
         origin: Vector {
             x: 0.,
@@ -154,7 +163,7 @@ pub fn make_image() {
 
     let mut scene = Scene::build(
         vec![
-            Box::new(main),
+            Box::new(hyperboloid),
             Box::new(back),
             Box::new(front),
             Box::new(right),

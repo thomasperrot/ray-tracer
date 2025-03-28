@@ -10,3 +10,18 @@ pub struct Intersection<'a> {
     pub normal: Vector,
     pub shape: &'a (dyn Shape),
 }
+
+
+// impl Intersection {
+//     pub fn build<'a>(shape: &'a (dyn Shape), ray: Vector) -> Self {
+//         todo!()
+//
+//         // Self {
+//         //     d: d,
+//         //     intersection: inter,
+//         //     normal: shape.get_normal(&inter),
+//         //     shape: shape,
+//         // }
+//     }
+//
+// }
