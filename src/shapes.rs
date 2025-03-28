@@ -58,7 +58,7 @@ impl Shape for Sphere {
     }
     fn intersection(&self, d: f32, inter: Vector) -> Intersection {
         Intersection {
-            d: d,
+            d,
             intersection: inter,
             normal: self.get_normal(&inter),
             shape: self,
@@ -104,7 +104,7 @@ impl Shape for Hyperboloid {
     }
     fn intersection(&self, d: f32, inter: Vector) -> Intersection {
         Intersection {
-            d: d,
+            d,
             intersection: inter,
             normal: self.get_normal(&inter),
             shape: self,

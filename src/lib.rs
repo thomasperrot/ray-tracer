@@ -95,7 +95,7 @@ pub fn make_image() {
             z: 25.,
         },
         radius: 10.,
-        material: opaque_white,
+        material: reflective,
     };
     let hyperboloid = Hyperboloid {
         origin: Vector {
@@ -163,7 +163,7 @@ pub fn make_image() {
 
     let mut scene = Scene::build(
         vec![
-            Box::new(hyperboloid),
+            Box::new(main),
             Box::new(back),
             Box::new(front),
             Box::new(right),

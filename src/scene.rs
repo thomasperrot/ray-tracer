@@ -1,4 +1,4 @@
-use crate::constants::IMAGE_SIZE;
+use crate::constants::{IMAGE_SIZE, MAX_BOUNCES};
 use crate::shapes::{Shape, Sphere};
 use crate::utils::intersection::Intersection;
 use crate::utils::ray::Ray;
@@ -43,8 +43,8 @@ impl Scene {
         let mut imgbuf = image::ImageBuffer::new(IMAGE_SIZE.0, IMAGE_SIZE.1);
         let d = (IMAGE_SIZE.0 / 2) as f32 / (self.camera.fov / 2.).tan();
         for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-            let ray = self.generate_ray(y, x, d);
-            let color = self.get_color(ray);
+            let mut ray = self.generate_ray(y, x, d);
+            let color = self.get_color(&mut ray, MAX_BOUNCES);
             *pixel = color;
         }
         imgbuf.save("generated.png").unwrap();
@@ -64,15 +64,23 @@ impl Scene {
         }
     }
 
-    fn get_color(&self, ray: Ray) -> image::Rgb<u8> {
+    fn get_color(&self, ray: &mut Ray, remaining_bounces: u8) -> image::Rgb<u8> {
         let black = image::Rgb([0, 0, 0]);
         let intersection = self.intersect(&ray);
         if intersection.is_none() {
             return black;
         }
-        let intersection = intersection.unwrap();
+        let mut intersection = intersection.unwrap();
+
+        // fixes a bug with specular materials
+        intersection.intersection += intersection.normal * 0.0001;
+
         if intersection.intersection.square_norm() > 1_000_000. {
             return black;
+        }
+        if intersection.shape.get_material().specular && remaining_bounces > 0 {
+            ray.reflect(&intersection);
+            return self.get_color(ray, remaining_bounces - 1);
         }
         let light_vector = self.light.origin - intersection.intersection;
         let light_vector_normalized = light_vector.normalize();

@@ -1,4 +1,4 @@
-use crate::shapes::Sphere;
+use crate::shapes::{Shape, Sphere};
 use crate::utils::intersection::Intersection;
 use crate::utils::vector::Vector;
 
@@ -9,5 +9,9 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn reflect(sphere: Sphere, intersection: Intersection) {}
+    pub fn reflect(&mut self, intersection: &Intersection) {
+        self.direction = ((self.direction - intersection.normal * 2. * intersection.normal.dot(&self.direction))).normalize();
+        self.origin = intersection.intersection;
+    }
+
 }
