@@ -92,9 +92,7 @@ impl Scene {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
         self.shapes
             .iter()
-            .map(|shape| shape.get_intersection(&ray))
-            .filter(|intersection| intersection.is_some())
-            .map(|intersection| intersection.unwrap())
+            .filter_map(|shape| shape.get_intersection(&ray))
             .min_by_key(|intersection| intersection.d.round() as u32)
     }
 }
