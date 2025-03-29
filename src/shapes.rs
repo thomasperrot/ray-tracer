@@ -26,7 +26,7 @@ pub trait Shape {
 
     fn get_poly(&self, ray: &Ray) -> (f32, f32, f32);
 
-     fn intersection(&self, d: f32, inter: Vector) -> Intersection;
+    fn intersection(&self, d: f32, inter: Vector) -> Intersection;
 }
 
 impl Debug for dyn Shape {

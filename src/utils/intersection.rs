@@ -11,7 +11,6 @@ pub struct Intersection<'a> {
     pub shape: &'a (dyn Shape),
 }
 
-
 // impl Intersection {
 //     pub fn build<'a>(shape: &'a (dyn Shape), ray: Vector) -> Self {
 //         todo!()

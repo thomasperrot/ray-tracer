@@ -89,6 +89,9 @@ impl Scene {
         let light_vector = self.light.origin - intersection.intersection;
         let light_vector_normalized = light_vector.normalize();
         let light_distance = light_vector.square_norm();
+        if self.is_in_shadow(&intersection) {
+            return black;
+        }
         let light_value = light_vector_normalized.dot(&intersection.normal)
             * self.light.intensity as f32
             / (2. * PI * light_distance);
@@ -106,5 +109,20 @@ impl Scene {
             .iter()
             .filter_map(|shape| shape.get_intersection(&ray))
             .min_by_key(|intersection| intersection.d.round() as u32)
+    }
+
+    fn is_in_shadow(&self, intersection: &Intersection) -> bool {
+        let v_light = self.light.origin - intersection.intersection;
+        let v_light_normalized = (self.light.origin - intersection.intersection).normalize();
+        let light_distance = v_light.square_norm();
+
+        let tmp_ray = Ray {
+            origin: intersection.intersection,
+            direction: v_light_normalized,
+        };
+        self.shapes
+            .iter()
+            .filter_map(|shape| shape.get_intersection(&tmp_ray))
+            .any(|intersection| intersection.d.powi(2) < light_distance)
     }
 }

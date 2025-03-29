@@ -91,7 +91,7 @@ pub fn make_image() {
     let main = Sphere {
         origin: Vector {
             x: 0.,
-            y: -5.,
+            y: 0.,
             z: 25.,
         },
         radius: 10.,
