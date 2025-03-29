@@ -82,6 +82,10 @@ impl Scene {
             ray.reflect(&intersection);
             return self.get_color(ray, remaining_bounces - 1);
         }
+        if intersection.shape.get_material().refractive_index != 0. && remaining_bounces > 0 {
+            ray.refract(&intersection);
+            return self.get_color(ray, remaining_bounces - 1);
+        }
         let light_vector = self.light.origin - intersection.intersection;
         let light_vector_normalized = light_vector.normalize();
         let light_distance = light_vector.square_norm();

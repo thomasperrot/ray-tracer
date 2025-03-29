@@ -19,7 +19,7 @@ pub fn make_image() {
             y: -20.,
             z: 50.,
         },
-        intensity: 2_000_000,
+        intensity: 4_000_000,
     };
     let camera = Camera {
         point: Vector {
@@ -85,17 +85,19 @@ pub fn make_image() {
     let transparent = Material {
         color: Rgb([255, 255, 255]),
         specular: false,
-        refractive_index: 1.5,
+        refractive_index: 2.3,
     };
 
     let main = Sphere {
         origin: Vector {
             x: 0.,
-            y: 0.,
+            y: -5.,
             z: 25.,
         },
         radius: 10.,
-        material: reflective,
+        // material: reflective,
+        // material: opaque_white,
+        material: transparent,
     };
     let hyperboloid = Hyperboloid {
         origin: Vector {
