@@ -1,7 +1,6 @@
-use crate::shapes::{Shape, Sphere};
+use crate::shapes::Shape;
 use crate::utils::intersection::Intersection;
 use crate::utils::vector::Vector;
-use num_complex::ComplexFloat;
 
 /// A ray
 pub struct Ray {

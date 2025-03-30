@@ -19,7 +19,7 @@ pub fn make_image() {
             y: -20.,
             z: 50.,
         },
-        intensity: 4_000_000,
+        intensity: 800_000,
     };
     let camera = Camera {
         point: Vector {
@@ -96,8 +96,8 @@ pub fn make_image() {
         },
         radius: 10.,
         // material: reflective,
-        // material: opaque_white,
-        material: transparent,
+        material: opaque_white,
+        // material: transparent,
     };
     let hyperboloid = Hyperboloid {
         origin: Vector {
@@ -163,8 +163,8 @@ pub fn make_image() {
         material: opaque_green,
     };
 
-    let mut scene = Scene::build(
-        vec![
+    let scene = Scene {
+        shapes: vec![
             Box::new(main),
             Box::new(back),
             Box::new(front),
@@ -175,6 +175,6 @@ pub fn make_image() {
         ],
         light,
         camera,
-    );
+    };
     scene.generate_image();
 }
