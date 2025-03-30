@@ -35,19 +35,17 @@ impl Scene {
         for (x, y, pixel) in imgbuf.enumerate_pixels_mut().tqdm() {
             let mut ray = self.generate_ray(y, x, d);
             let mut color = self.get_color(&mut ray, MAX_BOUNCES, false);
-            if DIFFUSED {
-                let mut diffused_color = [0f32; 3];
-                for _ in 0..DIFFUSED_SAMPLES_COUNT {
-                    ray = self.generate_ray(y, x, d);
-                    let result = self.get_color(&mut ray, MAX_BOUNCES, true);
-                    diffused_color[0] += result[0];
-                    diffused_color[1] += result[1];
-                    diffused_color[2] += result[2];
-                }
-                color[0] += diffused_color[0] / DIFFUSED_SAMPLES_COUNT as f32;
-                color[1] += diffused_color[1] / DIFFUSED_SAMPLES_COUNT as f32;
-                color[2] += diffused_color[2] / DIFFUSED_SAMPLES_COUNT as f32;
+            let mut diffused_color = [0f32; 3];
+            for _ in 0..DIFFUSED_SAMPLES_COUNT {
+                ray = self.generate_ray(y, x, d);
+                let result = self.get_color(&mut ray, 1, true);
+                diffused_color[0] += result[0];
+                diffused_color[1] += result[1];
+                diffused_color[2] += result[2];
             }
+            color[0] += diffused_color[0] / DIFFUSED_SAMPLES_COUNT as f32;
+            color[1] += diffused_color[1] / DIFFUSED_SAMPLES_COUNT as f32;
+            color[2] += diffused_color[2] / DIFFUSED_SAMPLES_COUNT as f32;
             color[0] = color[0].powf(1. / 2.2);
             color[1] = color[1].powf(1. / 2.2);
             color[2] = color[2].powf(1. / 2.2);
@@ -73,13 +71,10 @@ impl Scene {
     }
 
     fn get_color(&self, ray: &mut Ray, remaining_bounces: u8, diffused: bool) -> [f32; 3] {
-        let mut result = BLACK;
-        let diffused_part;
-        let intersection = self.intersect(&ray);
-        if intersection.is_none() {
-            return BLACK;
-        }
-        let mut intersection = intersection.unwrap();
+        let mut intersection = match self.intersect(&ray) {
+            Some(intersection) => intersection,
+            None => return BLACK
+        };
 
         // fixes a bug with specular materials
         intersection.intersection += intersection.normal * 0.0001;
@@ -95,31 +90,33 @@ impl Scene {
             ray.refract(&intersection);
             return self.get_color(ray, remaining_bounces - 1, diffused);
         }
-        if diffused && remaining_bounces > 0 {
+        let diffused_part = if diffused && remaining_bounces > 0 {
             diffuse(ray, &intersection);
-            result = self.get_color(ray, remaining_bounces - 1, diffused);
-        }
-        let light_vector = self.light.origin - intersection.intersection;
-        let light_vector_normalized = light_vector.normalize();
-        let light_distance = light_vector.square_norm();
-        if self.is_in_shadow(&intersection) {
-            diffused_part = BLACK;
+            self.get_color(ray, remaining_bounces - 1, diffused)
         } else {
+            [0., 0., 0.]
+        };
+        let color = if self.is_in_shadow(&intersection) {
+            BLACK
+        } else {
+            let light_vector = self.light.origin - intersection.intersection;
+            let light_vector_normalized = light_vector.normalize();
+            let light_distance = light_vector.square_norm();
             let light_value = light_vector_normalized.dot(&intersection.normal)
                 * self.light.intensity as f32
                 / (2. * PI * light_distance);
             let light_value = f32::max(light_value, 0.);
             let mat = intersection.shape.get_material();
-            diffused_part = [
+            [
                 light_value * mat.color[0] as f32,
                 light_value * mat.color[1] as f32,
                 light_value * mat.color[2] as f32,
-            ];
-        }
+            ]
+        };
         [
-            result[0] + diffused_part[0],
-            result[1] + diffused_part[1],
-            result[2] + diffused_part[2],
+            color[0] + diffused_part[0],
+            color[1] + diffused_part[1],
+            color[2] + diffused_part[2],
         ]
     }
 
